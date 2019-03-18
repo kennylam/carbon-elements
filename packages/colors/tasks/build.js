@@ -94,13 +94,12 @@ async function build() {
   colorMap += ') !default !global;';
 
   // @desc Returns an active color for a color in the $carbon--colors map
-  //       by mixing original color with another color grade and opacity of the same swatch.
-  //       Grade and swatch determined by original color.
-  //       Usage: @include carbon--colors-blend('background-color', 'blue', 60)
-  // @param {string} $property The property to change.
+  //       by mixing original color with a different grade and opacity from the same swatch.
+  //       Grade and opacity determined by original color.
+  //       Usage: background-color: carbon--colors-blend('blue', 60);
   // @param {string} $color The name of the color swatch.
   // @param {number} $grade The swatch grade.
-  const colorMapHover = `@mixin ${NAMESPACE}--colors-blend($property, $color, $grade) {
+  const colorMapHover = `@function ${NAMESPACE}--colors-blend($property, $color, $grade) {
     $blendGrade: null;
     @if $grade > 90 {
       $blendGrade: $grade - 20;
@@ -110,13 +109,13 @@ async function build() {
       $blendGrade: $grade + 10;
     }
     $opacity: if($grade <= 90, 0.6, 0.55);
-
     $colorHex: map-get(map-get($${NAMESPACE}--colors, $color), $grade);
     $blendColor: rgba(map-get(map-get($${NAMESPACE}--colors, $color), $blendGrade), $opacity);
     $percent: alpha($blendColor) * 100%;
     $opaque: opacify($blendColor, 1);
     $solid-color: mix($opaque, $colorHex, $percent);
-    #{$property}: $solid-color;
+
+    @return $solid-color;
 }
 `;
 
